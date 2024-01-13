@@ -49,7 +49,7 @@ public class FlareListener implements Listener {
             return;
         }
 
-        if (envoy.start(event.getPlayer())) {
+        if (envoy.startByFlare(event.getPlayer())) {
             if (event.getItem().getAmount() > 1) {
                 event.getItem().setAmount(event.getItem().getAmount() - 1);
             } else {

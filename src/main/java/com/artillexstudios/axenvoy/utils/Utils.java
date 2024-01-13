@@ -59,11 +59,11 @@ public class Utils {
         return e.sample();
     }
 
-    public static Location getNextLocation(Envoy envoy, Location loc) {
+    public static Location getNextLocation(Envoy envoy, Location loc,int minDistance,int maxDistance,int spaceDistance) {
         Location center = loc.clone();
-        loc.setX(loc.getBlockX() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE));
-        loc.setZ(loc.getBlockZ() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE));
-        if (loc.distanceSquared(center) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE) {
+        loc.setX(loc.getBlockX() + ThreadLocalRandom.current().nextInt(maxDistance * -1, maxDistance));
+        loc.setZ(loc.getBlockZ() + ThreadLocalRandom.current().nextInt(maxDistance * -1, maxDistance));
+        if (loc.distanceSquared(center) < minDistance * minDistance) {
             return null;
         }
 
@@ -74,9 +74,9 @@ public class Utils {
             }
         }
 
-        if (envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES > 0) {
+        if (spaceDistance > 0) {
             for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
-                if (spawnedCrate.getFinishLocation().distanceSquared(loc) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES) {
+                if (spawnedCrate.getFinishLocation().distanceSquared(loc) < spaceDistance * spaceDistance) {
                     return null;
                 }
             }

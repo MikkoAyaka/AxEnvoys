@@ -191,6 +191,124 @@ public class Envoy {
         return calendars;
     }
 
+    /**
+     * After a player uses flare to call for supplies, supply crates will drop around the player,
+     * and it is recommended to limit the number of supply crates to 1.
+     */
+    public boolean startByFlare(@NotNull Player player) {
+        Location playerLoc = player.getLocation();
+        if (active) {
+            return false;
+        }
+        active = true;
+        startTime = System.currentTimeMillis();
+        int crateAmount = ThreadLocalRandom.current().nextInt(minCrateAmount, maxCrateAmount + 1);
+        if (PaperUtils.isFolia()) {
+            EXECUTOR.execute(() -> {
+                int count = crateAmount - this.spawnedCrates.size();
+                if (count > 0) {
+                    for (int i = 0; i < count; i++) {
+                        Location location = null;
+                        int tries = 0;
+                        while (location == null && tries < 100) {
+                            tries++;
+                            try {
+                                location = Utils.getNextLocationFolia(this, playerLoc.clone()).get();
+                            } catch (InterruptedException | ExecutionException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        if (location != null) {
+                            new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
+                        }
+                    }
+                }
+
+                if (crateAmount > 1) {
+                    String message = StringUtils.formatToString(config.PREFIX + config.MULTIPLE_START_FLARE.replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world")).replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world").replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")));
+                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                        onlinePlayer.sendMessage(message);
+                    }
+                } else {
+                    String message = StringUtils.formatToString(config.PREFIX + config.SINGLE_START_FLARE.replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName())).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())));
+                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                        onlinePlayer.sendMessage(message);
+                    }
+                }
+
+                if (config.SEND_SPAWN_MESSAGES) {
+                    for (SpawnedCrate spawnedCrate : spawnedCrates) {
+                        String message = StringUtils.formatToString(config.PREFIX + config.CRATE_SPAWN.replace("%location%", config.LOCATION_FORMAT.replace("%world%", spawnedCrate.getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrate.getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrate.getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrate.getFinishLocation().getBlockZ()))));
+
+                        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                            if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
+                                onlinePlayer.sendMessage(StringUtils.formatToString(message));
+                            }
+                        }
+                    }
+                }
+
+                if (config.TIMEOUT_TIME > 0) {
+                    Scheduler.get().runLater(task -> {
+                        if (!active) return;
+
+                        stop();
+                    }, config.TIMEOUT_TIME * 20L);
+                }
+            });
+        }
+        else {
+            int count = crateAmount - this.spawnedCrates.size();
+            if (count > 0) {
+                for (int i = 0; i < count; i++) {
+                    Location location = null;
+                    int tries = 0;
+                    while (location == null && tries < 100) {
+                        tries++;
+                        location = Utils.getNextLocation(this, playerLoc.clone(),8,48,12);
+                    }
+
+                    if (location != null) {
+                        new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
+                    }
+                }
+            }
+
+            if (crateAmount > 1) {
+                String message = StringUtils.formatToString(config.PREFIX + config.MULTIPLE_START_FLARE.replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world")).replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world").replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")));
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    onlinePlayer.sendMessage(message);
+                }
+            } else {
+                String message = StringUtils.formatToString(config.PREFIX + config.SINGLE_START_FLARE.replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName())).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())));
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    onlinePlayer.sendMessage(message);
+                }
+            }
+
+            if (config.SEND_SPAWN_MESSAGES) {
+                for (SpawnedCrate spawnedCrate : spawnedCrates) {
+                    String message = StringUtils.formatToString(config.PREFIX + config.CRATE_SPAWN.replace("%location%", config.LOCATION_FORMAT.replace("%world%", spawnedCrate.getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrate.getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrate.getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrate.getFinishLocation().getBlockZ()))));
+
+                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                        if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
+                            onlinePlayer.sendMessage(StringUtils.formatToString(message));
+                        }
+                    }
+                }
+            }
+
+            if (config.TIMEOUT_TIME > 0) {
+                Scheduler.get().runLater(task -> {
+                    if (!active) return;
+
+                    stop();
+                }, config.TIMEOUT_TIME * 20L);
+            }
+        }
+        return true;
+    }
     public boolean start(Player player) {
         if (center == null) {
             return false;
@@ -303,7 +421,11 @@ public class Envoy {
                         int tries = 0;
                         while (location == null && tries < 100) {
                             tries++;
-                            location = Utils.getNextLocation(this, center.clone());
+                            location = Utils.getNextLocation(this, center.clone(),
+                                    config.RANDOM_SPAWN_MIN_DISTANCE,
+                                    config.RANDOM_SPAWN_MAX_DISTANCE,
+                                    config.RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES
+                            );
                         }
 
                         if (location != null) {
