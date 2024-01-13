@@ -186,7 +186,7 @@
         <dependency>
             <groupId>com.artillexstudios.axapi</groupId>
             <artifactId>axapi</artifactId>
-            <version>1.4.9</version>
+            <version>1.4.22</version>
         </dependency>
         <dependency>
             <groupId>me.carleslc.Simple-YAML</groupId>
