@@ -72,7 +72,10 @@ public class Envoy {
         for (Map.Entry<Object, Object> crate : config.CRATES.entrySet()) {
             String key = (String) crate.getKey();
             CrateType crateType = Crates.valueOf(key);
-            if (crateType == null) return;
+            if (crateType == null) {
+                AxEnvoyPlugin.getInstance().getLogger().warning("can't find create type: "+key);
+                continue;
+            }
 
             cratesMap.put(crateType, ((Number) crate.getValue()).doubleValue());
         }
