@@ -169,7 +169,7 @@ public class SpawnedCrate {
                 Player p = user.getPlayer();
                 String msg = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().START_TOUCH_BROADCAST
                         .replace("%player%",p.getName())
-                        .replace("%create_type%",envoy.getName())
+                        .replace("%create_type%",this.handle.getConfig().DISPLAY_NAME)
                         .replace("%location%",envoy.getConfig().LOCATION_FORMAT
                                 .replace("%world%", p.getWorld().getName())
                                 .replace("%x%", String.valueOf(p.getLocation().getBlockX()))
@@ -178,11 +178,11 @@ public class SpawnedCrate {
                 Bukkit.broadcastMessage(msg);
             } else if(health <= maxHealth * 0.5 && !user.broadcastCooldown) {
                 user.broadcastCooldown = true;
-                Bukkit.getScheduler().runTaskLaterAsynchronously(AxEnvoyPlugin.getInstance(),()-> user.broadcastCooldown = false,20 * 10);
+                Bukkit.getScheduler().runTaskLaterAsynchronously(AxEnvoyPlugin.getInstance(),()-> user.broadcastCooldown = false,20 * 60);
                 Player p = user.getPlayer();
                 String msg = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().HALF_TOUCH_BROADCAST
                         .replace("%player%",p.getName())
-                        .replace("%create_type%",envoy.getName())
+                        .replace("%create_type%",this.handle.getConfig().DISPLAY_NAME)
                         .replace("%location%",envoy.getConfig().LOCATION_FORMAT
                                 .replace("%world%", p.getWorld().getName())
                                 .replace("%x%", String.valueOf(p.getLocation().getBlockX()))
