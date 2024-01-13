@@ -11,11 +11,7 @@ import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.Utils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
@@ -161,6 +157,7 @@ public class SpawnedCrate {
 
     public void damage(User user, Envoy envoy) {
         if (user.canCollect(envoy, this.getHandle())) {
+            user.getPlayer().playSound(finishLocation, Sound.BLOCK_IRON_DOOR_OPEN,1.5f,0.5f);
             health--;
             updateHologram();
             if (health == 0) {
