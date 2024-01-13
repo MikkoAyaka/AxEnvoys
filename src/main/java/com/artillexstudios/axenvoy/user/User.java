@@ -24,6 +24,8 @@ public class User {
     private final Player player;
     private Envoy editor = null;
 
+    public boolean broadcastCooldown = false;
+
     public User(@NotNull Player player) {
         this.player = player;
         USER_MAP.put(player.getUniqueId(), this);

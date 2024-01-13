@@ -43,9 +43,11 @@ public class SpawnedCrate {
     private Hologram hologram;
     private int tick = 0;
     private int health;
+    private int maxHealth;
 
     public SpawnedCrate(@NotNull Envoy parent, @NotNull CrateType handle, @NotNull Location location) {
         this.health = handle.getConfig().REQUIRED_INTERACTION_AMOUNT;
+        this.maxHealth = health;
         this.parent = parent;
         this.handle = handle;
         this.finishLocation = location;
@@ -163,6 +165,30 @@ public class SpawnedCrate {
             updateHologram();
             if (health == 0) {
                 claim(user.getPlayer(), envoy);
+            } else if(health+1 == maxHealth){
+                Player p = user.getPlayer();
+                String msg = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().START_TOUCH_BROADCAST
+                        .replace("%player%",p.getName())
+                        .replace("%create_type%",envoy.getName())
+                        .replace("%location%",envoy.getConfig().LOCATION_FORMAT
+                                .replace("%world%", p.getWorld().getName())
+                                .replace("%x%", String.valueOf(p.getLocation().getBlockX()))
+                                .replace("%y%", String.valueOf(p.getLocation().getBlockY()))
+                                .replace("%z%", String.valueOf(p.getLocation().getBlockZ()))));
+                Bukkit.broadcastMessage(msg);
+            } else if(health <= maxHealth * 0.5 && !user.broadcastCooldown) {
+                user.broadcastCooldown = true;
+                Bukkit.getScheduler().runTaskLaterAsynchronously(AxEnvoyPlugin.getInstance(),()-> user.broadcastCooldown = false,20 * 10);
+                Player p = user.getPlayer();
+                String msg = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().HALF_TOUCH_BROADCAST
+                        .replace("%player%",p.getName())
+                        .replace("%create_type%",envoy.getName())
+                        .replace("%location%",envoy.getConfig().LOCATION_FORMAT
+                                .replace("%world%", p.getWorld().getName())
+                                .replace("%x%", String.valueOf(p.getLocation().getBlockX()))
+                                .replace("%y%", String.valueOf(p.getLocation().getBlockY()))
+                                .replace("%z%", String.valueOf(p.getLocation().getBlockZ()))));
+                Bukkit.broadcastMessage(msg);
             }
         } else {
             user.getPlayer().sendMessage(StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().COOLDOWN.replace("%player%", user.getPlayer().getName()).replace("%player_name%", user.getPlayer().getName()).replace("%crate%", getHandle().getConfig().DISPLAY_NAME).replace("%cooldown%", String.valueOf((user.getCollectCooldown(envoy, getHandle()) - System.currentTimeMillis()) / 1000))));

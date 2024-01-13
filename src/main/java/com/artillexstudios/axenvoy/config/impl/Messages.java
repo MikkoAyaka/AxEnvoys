@@ -38,6 +38,10 @@ public class Messages extends AbstractConfig {
     @Key("messages.cooldown")
     public String COOLDOWN = "Woah! Slow down! You need to wait %cooldown% seconds before opening %crate%!";
 
+    @Key("messages.start_touch_broadcast")
+    public String START_TOUCH_BROADCAST = "%player% start getting a %create_type% supply create ! (%location%)";
+    @Key("messages.half_touch_broadcast")
+    public String HALF_TOUCH_BROADCAST = "A %create_type% supply create is about to be opened by %player% ! (%location%)";
     @Key("messages.ended")
     public String ENDED = "The event has ended!";
 
