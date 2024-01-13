@@ -243,7 +243,7 @@ public class Envoy {
 
                         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                             if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
-                                onlinePlayer.sendMessage(StringUtils.formatToString(message));
+                                onlinePlayer.sendMessage(message);
                             }
                         }
                     }
@@ -293,7 +293,7 @@ public class Envoy {
 
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                         if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
-                            onlinePlayer.sendMessage(StringUtils.formatToString(message));
+                            onlinePlayer.sendMessage(message);
                         }
                     }
                 }
@@ -399,7 +399,7 @@ public class Envoy {
 
                             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                                 if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
-                                    onlinePlayer.sendMessage(StringUtils.formatToString(message));
+                                    onlinePlayer.sendMessage(message);
                                 }
                             }
                         }
@@ -476,7 +476,7 @@ public class Envoy {
 
                         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                             if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
-                                onlinePlayer.sendMessage(StringUtils.formatToString(message));
+                                onlinePlayer.sendMessage(message);
                             }
                         }
                     }
